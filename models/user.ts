@@ -1,11 +1,20 @@
-import { Entity, Unique, Column, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  Unique,
+  Column,
+  ManyToMany,
+  JoinTable,
+  BeforeInsert
+} from 'typeorm';
 import { Geometry } from 'geojson';
+
 import {
   IsDefined,
   IsNotEmpty,
   IsEmail,
-  IsNumber,
-  IsInt,
+  MaxLength,
+  IsLatLong,
+  IsDateString,
   IsString
 } from 'class-validator';
 
@@ -22,37 +31,47 @@ export default class User extends BaseModel {
   @IsNotEmpty()
   lastname!: string;
 
-  @Column('text')
+  @Column('text', { select: false })
   @IsDefined()
   @IsNotEmpty()
   @IsEmail()
-  email!: string;
+  email?: string;
 
-  @Column('text')
+  @Column('text', { select: false })
   @IsDefined()
   @IsNotEmpty()
-  password!: string;
+  password?: string;
+
+  @Column('text')
+  @IsNotEmpty()
+  @MaxLength(300)
+  bio!: string;
 
   @Column('date')
+  @IsDateString({ strict: false })
   dob!: Date;
 
   @Column('point')
-  @IsNumber({ allowInfinity: false, allowNaN: false }, { each: true })
+  @IsLatLong()
   location!: Geometry;
 
   @Column('int', { default: 1000 })
-  @IsInt()
   rating!: number;
 
-  @Column('array')
+  @Column('simple-array')
   @IsString({ each: true })
   favouriteGenres!: string[];
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { cascade: true })
   @JoinTable()
   favouritedUsers!: User[];
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { cascade: true })
   @JoinTable()
   ignoredUsers!: User[];
+
+  @BeforeInsert()
+  setBaseRating() {
+    this.rating = 1000;
+  }
 }
