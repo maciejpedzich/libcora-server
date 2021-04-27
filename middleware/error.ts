@@ -26,7 +26,5 @@ export default function errorMiddleware(
     message = 'This email address has already been registered';
   }
 
-  console.log();
-
   return res.status(status).json({ error: message });
 }
