@@ -1,11 +1,13 @@
 import express from 'express';
-import { createConnection } from 'typeorm';
 import 'reflect-metadata';
+import { createConnection } from 'typeorm';
 import { config as loadENV } from 'dotenv';
 
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import errorMiddleware from 'middleware/error';
+
+import errorMiddleware from './middleware/error';
+import authRouter from './routers/auth';
 
 loadENV();
 
@@ -41,6 +43,7 @@ const isDevelopmentEnv = process.env.NODE_ENV === 'development';
     app.use(express.json());
     app.use(cookieParser());
 
+    app.use('/auth', authRouter);
     app.use(errorMiddleware);
 
     app.listen(process.env.PORT);
