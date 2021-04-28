@@ -26,7 +26,7 @@ const isDevelopmentEnv = process.env.NODE_ENV === 'development';
     await createConnection({
       type: 'postgres',
       url: process.env.DB_URL as string,
-      entities: ['./models/*.ts'],
+      entities: ['./src/models/*.ts'],
       logging: isDevelopmentEnv,
       synchronize: isDevelopmentEnv
     });
