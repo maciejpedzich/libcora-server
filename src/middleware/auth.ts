@@ -11,7 +11,6 @@ export default async function authMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  console.log(req.path);
   const userRepository = getRepository(User);
   const secret = process.env.JWT_SECRET as string;
 
