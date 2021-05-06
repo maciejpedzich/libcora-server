@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { sign } from 'jsonwebtoken';
 
-import RequestWithUser from '@/interfaces/request-with-user';
+import RequestWithUser from '@/types/request-with-user';
 import User from '@/models/user';
 
 export default function generateTokensMiddleware(

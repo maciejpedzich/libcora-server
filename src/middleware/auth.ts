@@ -3,8 +3,8 @@ import { getRepository } from 'typeorm';
 import { verify, TokenExpiredError } from 'jsonwebtoken';
 
 import User from '../models/user';
-import RequestWithUser from '../interfaces/request-with-user';
-import TokenPayload from '../interfaces/token-payload';
+import RequestWithUser from '../types/request-with-user';
+import TokenPayload from '../types/token-payload';
 
 export default async function authMiddleware(
   req: RequestWithUser,

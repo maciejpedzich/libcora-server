@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import { getRepository } from 'typeorm';
 import { hash, compare } from 'bcrypt';
 
-import RequestWithUser from '../interfaces/request-with-user';
+import RequestWithUser from '../types/request-with-user';
 import User from '../models/user';
 import InvalidCredentialsError from '../errors/invalid-credentials';
 
