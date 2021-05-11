@@ -6,7 +6,6 @@ import {
   JoinTable,
   BeforeInsert
 } from 'typeorm';
-import { Geometry } from 'geojson';
 
 import {
   IsDefined,
@@ -19,6 +18,7 @@ import {
 } from 'class-validator';
 
 import BaseModel from './base';
+import LocationObject from '@/types/location-object';
 
 @Entity({ name: 'users' })
 @Unique(['email'])
@@ -53,12 +53,12 @@ export default class User extends BaseModel {
 
   @Column('point')
   @IsLatLong()
-  location!: Geometry;
+  location!: string | LocationObject;
 
-  @Column('int', { default: 1000 })
+  @Column('float', { default: 1000 })
   rating!: number;
 
-  @Column('simple-array')
+  @Column('text', { array: true, default: '{}' })
   @IsString({ each: true })
   favouriteGenres!: string[];
 
