@@ -21,7 +21,9 @@ export default async function authMiddleware(
     delete accessTokenPayload.iat;
     delete accessTokenPayload.exp;
 
-    req.user = await userRepository.findOne(accessTokenPayload.userId);
+    req.user = await userRepository.findOne(accessTokenPayload.userId, {
+      relations: ['favouritedUsers', 'ignoredUsers']
+    });
 
     return next();
   } catch (error) {
@@ -36,7 +38,9 @@ export default async function authMiddleware(
         delete refreshTokenPayload.iat;
         delete refreshTokenPayload.exp;
 
-        req.user = await userRepository.findOne(refreshTokenPayload.userId);
+        req.user = await userRepository.findOne(refreshTokenPayload.userId, {
+          relations: ['favouritedUsers', 'ignoredUsers']
+        });
 
         return next();
       } catch (e) {

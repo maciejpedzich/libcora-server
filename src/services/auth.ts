@@ -16,6 +16,8 @@ export default class AuthService {
 
     try {
       req.body.password = await hash(req.body.password, 10);
+      req.body.favouritedUsers = [];
+      req.body.ignoredUsers = [];
 
       const user = (userRepository.create(req.body) as unknown) as User;
       req.user = await userRepository.save(user);
@@ -35,7 +37,10 @@ export default class AuthService {
       ) as (keyof User)[];
 
       const { email, password } = req.body;
-      const user = await userRepository.findOne({ email }, { select: allKeys });
+      const user = await userRepository.findOne(
+        { email },
+        { select: allKeys, relations: ['favouritedUsers', 'ignoredUsers'] }
+      );
 
       if (user) {
         const passwordsMatch = await compare(password, user.password as string);
