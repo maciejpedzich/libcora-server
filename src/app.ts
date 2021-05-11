@@ -6,8 +6,9 @@ import { config as loadENV } from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
-import errorMiddleware from './middleware/error';
 import authRouter from './routers/auth';
+import usersRouter from './routers/users';
+import errorMiddleware from './middleware/error';
 
 loadENV();
 
@@ -44,6 +45,7 @@ const isDevelopmentEnv = process.env.NODE_ENV === 'development';
     app.use(cookieParser());
 
     app.use('/auth', authRouter);
+    app.use('/users', usersRouter);
     app.use(errorMiddleware);
 
     app.listen(process.env.PORT);
