@@ -11,8 +11,10 @@ import {
   IsDefined,
   IsNotEmpty,
   IsEmail,
+  MinLength,
   MaxLength,
   IsLatLong,
+  ArrayNotEmpty,
   IsDateString,
   IsString
 } from 'class-validator';
@@ -40,7 +42,12 @@ export default class User extends BaseModel {
   @Column('text', { select: false })
   @IsDefined()
   @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(30)
   password?: string;
+
+  @Column('text')
+  avatarUrl!: string;
 
   @Column('text')
   @IsNotEmpty()
@@ -58,7 +65,8 @@ export default class User extends BaseModel {
   @Column('float', { default: 1000 })
   rating!: number;
 
-  @Column('text', { array: true, default: '{}' })
+  @Column('text', { array: true })
+  @ArrayNotEmpty()
   @IsString({ each: true })
   favouriteGenres!: string[];
 
