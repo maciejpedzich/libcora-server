@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { TokenExpiredError } from 'jsonwebtoken';
 import { QueryFailedError } from 'typeorm/error/QueryFailedError';
 import BaseHttpError from '../errors/base-http';
 
@@ -24,6 +25,9 @@ export default function errorMiddleware(
   ) {
     status = 409;
     message = 'This email address has already been registered';
+  } else if (error instanceof TokenExpiredError) {
+    status = 401;
+    message = 'Your session has expired';
   }
 
   return res.status(status).json({ error: message });
