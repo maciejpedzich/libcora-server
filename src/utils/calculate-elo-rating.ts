@@ -4,9 +4,9 @@ export default function calculateEloRating(
   score: number
 ) {
   const K_FACTOR =
-    potentialMatchRating > 2400
+    potentialMatchRating > 2000
       ? 16
-      : potentialMatchRating < 2400 && potentialMatchRating > 2100
+      : potentialMatchRating < 2000 && potentialMatchRating > 1500
       ? 24
       : 32;
 
