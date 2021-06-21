@@ -7,10 +7,14 @@ const usersRouter = Router();
 
 usersRouter.use(authMiddleware);
 
-usersRouter.get('/', usersService.getMatchingUsers);
+usersRouter.get('/', usersService.getPossiblyMatchingUsers);
 
 usersRouter.post('/favourite/:userId', usersService.favouriteUser);
 
 usersRouter.post('/ignore/:userId', usersService.ignoreUser);
+
+usersRouter.get('/matches', usersService.getUserMatches);
+
+usersRouter.get('/mutual-matches', usersService.getMutualMatches);
 
 export default usersRouter;

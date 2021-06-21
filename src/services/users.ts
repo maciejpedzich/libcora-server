@@ -8,7 +8,7 @@ import LocationObject from '../types/location-object';
 import calculateEloRating from '../utils/calculate-elo-rating';
 
 export default class UsersService {
-  public async getMatchingUsers(
+  public async getPossiblyMatchingUsers(
     req: RequestWithUser,
     res: Response,
     next: NextFunction
@@ -61,6 +61,7 @@ export default class UsersService {
           { latLongStr }
         )
         .orderBy('"user"."rating"', 'DESC')
+        .limit(10)
         .getMany();
 
       return res.status(200).json(users);
@@ -134,8 +135,8 @@ export default class UsersService {
         );
       }
 
-      currentUser.location = Object.values(currentUser.location).join();
       userToIgnore.location = Object.values(userToIgnore.location).join();
+      currentUser.location = Object.values(currentUser.location).join();
 
       userToIgnore.rating = calculateEloRating(
         currentUser.rating,
@@ -148,6 +149,52 @@ export default class UsersService {
       return res.status(200).json({
         message: 'User ignored successfully'
       });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  public async getUserMatches(
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { favouritedUsers, ignoredUsers } = req.user as User;
+
+      return res.status(200).json({ favouritedUsers, ignoredUsers });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  public getAllUserMatches(
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { favouritedUsers, ignoredUsers } = req.user as User;
+
+      return res.status(200).json({ favouritedUsers, ignoredUsers });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  public async getMutualMatches(
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { favouritedUsers, id } = req.user as User;
+      const currentUserId = id;
+      const matches = favouritedUsers.filter((user) =>
+        user.favouritedUsers.find((u) => u.id === currentUserId)
+      );
+
+      return res.status(200).json(matches);
     } catch (error) {
       return next(error);
     }
