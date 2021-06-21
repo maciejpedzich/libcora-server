@@ -5,6 +5,7 @@ import { verify, TokenExpiredError } from 'jsonwebtoken';
 import User from '../models/user';
 import RequestWithUser from '../types/request-with-user';
 import TokenPayload from '../types/token-payload';
+import parseLocationObj from '../utils/parse-location-obj';
 
 export default async function authMiddleware(
   req: RequestWithUser,
@@ -21,9 +22,17 @@ export default async function authMiddleware(
     delete accessTokenPayload.iat;
     delete accessTokenPayload.exp;
 
-    req.user = await userRepository.findOne(accessTokenPayload.userId, {
-      relations: ['favouritedUsers', 'ignoredUsers']
+    req.user = await userRepository.findOneOrFail(accessTokenPayload.userId, {
+      relations: [
+        'favouritedUsers',
+        'favouritedUsers.favouritedUsers',
+        'ignoredUsers',
+        'ignoredUsers.ignoredUsers'
+      ]
     });
+
+    req.user.favouritedUsers.map(parseLocationObj);
+    req.user.ignoredUsers.map(parseLocationObj);
 
     return next();
   } catch (error) {
@@ -38,9 +47,20 @@ export default async function authMiddleware(
         delete refreshTokenPayload.iat;
         delete refreshTokenPayload.exp;
 
-        req.user = await userRepository.findOne(refreshTokenPayload.userId, {
-          relations: ['favouritedUsers', 'ignoredUsers']
-        });
+        req.user = await userRepository.findOneOrFail(
+          refreshTokenPayload.userId,
+          {
+            relations: [
+              'favouritedUsers',
+              'favouritedUsers.favouritedUsers',
+              'ignoredUsers',
+              'ignoredUsers.ignoredUsers'
+            ]
+          }
+        );
+
+        req.user.favouritedUsers.map(parseLocationObj);
+        req.user.ignoredUsers.map(parseLocationObj);
 
         return next();
       } catch (e) {
