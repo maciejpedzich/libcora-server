@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 
 import authRouter from './routers/auth';
 import usersRouter from './routers/users';
+import messagesRouter from './routers/messages';
 import errorMiddleware from './middleware/error';
 
 loadENV();
@@ -46,6 +47,7 @@ const isDevelopmentEnv = process.env.NODE_ENV === 'development';
 
     app.use('/auth', authRouter);
     app.use('/users', usersRouter);
+    app.use('/messages', messagesRouter);
     app.use(errorMiddleware);
 
     app.listen(process.env.PORT);
