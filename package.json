@@ -5,7 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "ts-node-dev ./src/app.ts"
+    "start-dev": "ts-node-dev ./src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.1.2",
     "typeorm": "^0.2.32"
   },
   "devDependencies": {
