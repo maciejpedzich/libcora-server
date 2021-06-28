@@ -49,9 +49,9 @@ const isDevelopmentEnv = process.env.NODE_ENV === 'development';
     app.use('/users', usersRouter);
     app.use('/messages', messagesRouter);
     app.use(errorMiddleware);
-
-    app.listen(process.env.PORT);
   } catch (error) {
     console.error(error);
   }
 })();
+
+export default app;
