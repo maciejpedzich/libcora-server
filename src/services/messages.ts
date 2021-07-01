@@ -16,20 +16,25 @@ export default class MessagesService {
     const currentUser = req.user as User;
 
     try {
-      const take = req.query.pageSize ? +req.query.pageSize : 15;
-      const skip = req.query.currentPage ? +req.query.currentPage * take : 0;
+      const PAGE_SIZE = 15;
+      const offset = req.query.page ? +req.query.page * PAGE_SIZE : 0;
 
-      const messages = await messageRepository.find({
+      const [messages, numAllMessages] = await messageRepository.findAndCount({
         where: [
-          { authorId: currentUser.id, recipientId: req.params.contactId },
-          { authorId: req.params.contactId, recipientId: currentUser.id }
+          { authorId: currentUser.id, recipientId: req.params.recipientId },
+          { authorId: req.params.recipientId, recipientId: currentUser.id }
         ],
-        take,
-        skip,
-        withDeleted: true
+        take: PAGE_SIZE,
+        skip: offset,
+        order: {
+          dateCreated: 'DESC'
+        }
       });
+      const numPages = Math.floor(numAllMessages / PAGE_SIZE);
 
-      return res.status(200).json(messages);
+      messages.reverse();
+
+      return res.status(200).json({ messages, numPages });
     } catch (error) {
       return next(error);
     }

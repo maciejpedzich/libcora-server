@@ -3,9 +3,6 @@ import BaseModel from './base';
 
 @Entity({ name: 'messages' })
 export default class Message extends BaseModel {
-  @DeleteDateColumn()
-  dateDeleted!: Date;
-
   @Column('text', { nullable: true })
   content!: string | null;
 

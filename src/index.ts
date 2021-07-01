@@ -6,28 +6,46 @@ import wrapExpressMiddleware from './utils/wrap-express-mw';
 import authMiddleware from './middleware/auth';
 import RequestWithUser from './types/request-with-user';
 import User from './models/user';
+import Message from './models/message';
+
+const ALLOWED_ORIGINS = [
+  'capacitor://localhost',
+  'ionic://localhost',
+  'http://localhost',
+  'http://localhost:8080',
+  'http://localhost:8100'
+];
 
 const httpServer = createServer(app);
-const io = new Server(httpServer);
-const uidToSidMap: { [uid: string]: string } = {};
-
-io.use(wrapExpressMiddleware(authMiddleware));
+const io = new Server(httpServer, {
+  cors: {
+    origin: ALLOWED_ORIGINS,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization']
+  }
+});
+const uidToSidMap: { [uid: string]: string | undefined } = {};
 
 io.on('connection', (socket: Socket) => {
-  const { user } = socket.request as RequestWithUser;
-  const currentUser = user as User;
-  uidToSidMap[currentUser.id] = socket.id;
-
-  console.log(uidToSidMap);
-
-  socket.on('disconnect', () => {
-    delete uidToSidMap[currentUser.id];
-    console.log(uidToSidMap);
+  socket.on('map-uid', (uid: string) => {
+    if (uid) {
+      uidToSidMap[uid] = socket.id;
+    }
   });
 
-  socket.on('send-message', ({ content, recipientId }) =>
-    io.to(uidToSidMap[recipientId]).emit('incoming-message', content)
-  );
+  socket.on('remove-uid', (uid: string) => {
+    delete uidToSidMap[uid];
+  });
+
+  socket.on('send-message', (message: Message) => {
+    const sid = uidToSidMap[message.recipientId];
+
+    if (sid) {
+      io.to(sid).emit('incoming-message', message);
+    }
+  });
 });
 
 httpServer.listen(process.env.PORT);

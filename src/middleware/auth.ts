@@ -36,7 +36,7 @@ export default async function authMiddleware(
 
     return next();
   } catch (error) {
-    if (error instanceof TokenExpiredError && req.path === '/refresh') {
+    if (error instanceof TokenExpiredError) {
       try {
         const refreshToken = req.cookies['Authorization-Refresh'];
         const refreshTokenPayload = verify(
