@@ -10,6 +10,8 @@ import authRouter from './routers/auth';
 import usersRouter from './routers/users';
 import messagesRouter from './routers/messages';
 import errorMiddleware from './middleware/error';
+import fileUpload from './middleware/file-upload';
+import generateFileUrl from './middleware/generate-file-url';
 
 loadENV();
 
@@ -42,9 +44,11 @@ const isDevelopmentEnv = process.env.NODE_ENV === 'development';
         exposedHeaders: ['Authorization']
       })
     );
+    app.use(express.static('./public'));
     app.use(express.json());
     app.use(cookieParser());
 
+    app.post('/upload-image', fileUpload.single('image'), generateFileUrl);
     app.use('/auth', authRouter);
     app.use('/users', usersRouter);
     app.use('/messages', messagesRouter);

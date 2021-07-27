@@ -5,7 +5,6 @@ import app from './app';
 import wrapExpressMiddleware from './utils/wrap-express-mw';
 import authMiddleware from './middleware/auth';
 import RequestWithUser from './types/request-with-user';
-import User from './models/user';
 import Message from './models/message';
 
 const ALLOWED_ORIGINS = [
@@ -28,15 +27,20 @@ const io = new Server(httpServer, {
 });
 const uidToSidMap: { [uid: string]: string | undefined } = {};
 
-io.on('connection', (socket: Socket) => {
-  socket.on('map-uid', (uid: string) => {
-    if (uid) {
-      uidToSidMap[uid] = socket.id;
-    }
-  });
+wrapExpressMiddleware(authMiddleware);
 
-  socket.on('remove-uid', (uid: string) => {
-    delete uidToSidMap[uid];
+io.on('connection', (socket: Socket) => {
+  const authenticatedRequest = socket.request as RequestWithUser;
+  const userId = authenticatedRequest.user?.id;
+
+  if (userId) {
+    uidToSidMap[userId] = socket.id;
+  }
+
+  socket.on('disconnect', () => {
+    if (userId) {
+      delete uidToSidMap[userId];
+    }
   });
 
   socket.on('send-message', (message: Message) => {

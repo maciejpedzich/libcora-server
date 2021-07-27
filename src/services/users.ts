@@ -35,9 +35,7 @@ export default class UsersService {
         .concat([id, ...favouritedUsersIds]);
 
       const currentUserLocation = location as LocationObject;
-      const latLongStr = Object.values(currentUserLocation)
-        .map((val) => val.toString())
-        .join(' ');
+      const latLongStr = Object.values(currentUserLocation).join(' ');
 
       const users = await userRepository
         .createQueryBuilder('user')
